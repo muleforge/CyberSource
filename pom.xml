@@ -105,25 +105,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <artifactId>maven-shade-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>com.sun.jersey:jersey-core</include>
-                                    <include>com.sun.jersey:jersey-client</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.mule.tools</groupId>
                 <artifactId>maven-muleforge-plugin</artifactId>
                 <version>1.0</version>
