@@ -4,13 +4,13 @@
 
     <groupId>org.mule.components.cybersource</groupId>
     <artifactId>CYBERSRC</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <packaging>jar</packaging>
     <name>authorizeNet</name>
     <url>http://www.muleforge.org/projects/cybersrc</url>
 
     <properties>
-        <muleVersion>3.1.0-SNAPSHOT</muleVersion>
+        <muleVersion>3.1.0</muleVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jacksonVersion>1.3.1</jacksonVersion>
         <jdk5Name>J2SE-1.5</jdk5Name>
@@ -48,6 +48,30 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.transports</groupId>
+            <artifactId>mule-transport-vm</artifactId>
+            <version>${muleVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-spring-config</artifactId>
+            <version>${muleVersion}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.tests</groupId>
+            <artifactId>mule-tests-functional</artifactId>
+            <version>${muleVersion}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.modules</groupId>
+            <artifactId>mule-module-client</artifactId>
+            <version>${muleVersion}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

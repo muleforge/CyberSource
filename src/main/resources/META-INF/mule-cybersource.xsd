@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns="http://www.mulesoft.org/schema/mule/cybersource"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:mule="http://www.mulesoft.org/schema/mule/core"
+            xmlns:schemadoc="http://www.mulesoft.org/schema/mule/schemadoc"
+            xmlns:beans="http://www.springframework.org/schema/beans"
+            targetNamespace="http://www.mulesoft.org/schema/mule/cybersource"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:import namespace="http://www.springframework.org/schema/beans"
+                schemaLocation="http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/core"
+                schemaLocation="http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd"/>
+    <xsd:import namespace="http://www.mulesoft.org/schema/mule/schemadoc"
+                schemaLocation="http://www.mulesoft.org/schema/mule/schemadoc/3.1/mule-schemadoc.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation>
+        </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="config" type="cybersourceConfigurationType" substitutionGroup="mule:abstract-extension"/>
+    <xsd:complexType name="cybersourceConfigurationType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractExtensionType">
+                <xsd:attribute name="name" type="mule:substitutableName" use="required">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Identifies the connector so that other elements can reference it.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="merchantId" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The merchant Id used for all transactions.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="keysDirectory" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The path to the directory containing the p12 key needed for all transactions.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="testMode" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Setting this to true will force the connector to use the test gateway for for all
+                            transactions.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="make-payment" type="makePaymentType"
+                 substitutionGroup="mule:abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                This is the most common type of credit card transaction and is the default payment gateway transaction
+                type. The amount is sent for authorization, and if approved, is automatically submitted for settlement.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="makePaymentType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractInterceptingMessageProcessorType">
+                <xsd:attribute name="amount" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The amount to be charged.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="creditCardNumber" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The credit card number to be used for the transaction.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="expirationDate" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The expiration date associated with the credit card used.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="firstName" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            First name associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="lastName" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Last name associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="address" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing address that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="city" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing city that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="state" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing state that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="postalCode" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing postal code that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="email" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Email address associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="country" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing country that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="config-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="authorize-payment" type="authorizePaymentType"
+                 substitutionGroup="mule:abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                Online authorization means that when you submit an order using a credit card, you receive
+                an immediate confirmation about the availability of the funds. If the funds are available,
+                the issuing bank reduces your customer’s open to buy, which is the amount of credit
+                available on the card. Most of the common credit cards are processed online. For online
+                authorizations, you will typically start the process of order fulfillment soon after you
+                receive confirmation of the order.
+                Online authorizations expire with the issuing bank after a specific length of time if they
+                have not been captured and settled. Most authorizations expire within five to seven days.
+                The issuing bank determines the length of time.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="authorizePaymentType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractInterceptingMessageProcessorType">
+                <xsd:attribute name="amount" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The amount to be charged.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="creditCardNumber" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The credit card number to be used for the transaction.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="expirationDate" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The expiration date associated with the credit card used.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="firstName" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            First name associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="lastName" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Last name associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="address" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing address that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="city" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing city that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="state" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing state that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="postalCode" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing postal code that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="email" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Email address associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="country" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            Billing country that is associated with the credit card.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="config-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="capture-payment" type="capturePaymentType"
+                 substitutionGroup="mule:abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                When you are ready to fulfill a customer’s order and transfer funds from the customer’s
+                bank to your bank, capture the authorization for that order.
+
+                If you can fulfill only part of a customer’s order, do not capture the full amount of the
+                authorization. Capture only the cost of the items that you ship. When you ship the
+                remaining items, request a new authorization, then capture the new authorization.
+
+                Due to the potential delay between authorization and capture, the authorization might
+                expire with the issuing bank before you request capture. Most authorizations expire
+                within five to seven days. If an authorization expires with the issuing bank before you
+                request the capture, your bank or processor might require you to resubmit an
+                authorization request and include a request for capture in the same message.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="capturePaymentType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractInterceptingMessageProcessorType">
+                <xsd:attribute name="authRequestId" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The authorization code of an original transaction not authorized on the payment gateway
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="amount" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The amount to be charged.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="config-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="credit" type="creditType"
+                 substitutionGroup="mule:abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                CyberSource supports credits for all processors except CyberSource Latin American
+                Processing.
+
+                Request a credit when you need to give the customer a refund. When your request for a
+                credit is successful, the issuing bank for the credit card takes money out of your merchant
+                bank account and returns it to the customer. It usually takes two to four days for your
+                acquiring bank to transfer funds from your merchant bank account.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="creditType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractInterceptingMessageProcessorType">
+                <xsd:attribute name="amount" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The amount to be credited.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="cardNumber" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The credit card number to be used for the transaction.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="expDate" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The expiration date associated with the credit card used.
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="orderRequestToken" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The payment gateway-assigned transaction ID of an original transaction
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="config-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="void-transaction" type="voidTransactionType"
+                 substitutionGroup="mule:abstract-message-processor">
+        <xsd:annotation>
+            <xsd:documentation>
+                This transaction type can be used to cancel either an original transaction that is not yet settled, or
+                an entire order composed of more than one transaction. A void prevents the transaction or order from
+                being sent for settlement. A Void can be submitted against any other transaction type.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+    <xsd:complexType name="voidTransactionType">
+        <xsd:complexContent>
+            <xsd:extension base="mule:abstractInterceptingMessageProcessorType">
+                <xsd:attribute name="requestId" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The payment gateway-assigned request ID of an original transaction
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="orderRequestToken" type="xsd:string">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            The payment gateway-assigned order Request Token of an original transaction
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="config-ref" type="xsd:string" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

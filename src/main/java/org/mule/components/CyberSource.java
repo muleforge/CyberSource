@@ -18,20 +18,48 @@ import org.mule.components.model.TransactionType;
 
 public class CyberSource
 {
-    private Properties properties;
+    private String merchantId;
+    private String keysDirectory;
+    private Boolean testMode = false;
 
-    public CyberSource(String merchantId, String keysDirectory)
+    // This tells the client to use the Apache HTTP client instead of
+    // the built in HTTP client.
+    private Boolean useHttpClient = true;
+
+    public String getMerchantId()
     {
-        this(merchantId, keysDirectory, false);
+        return merchantId;
     }
 
-    public CyberSource(String merchantId, String keysDirectory, Boolean testMode)
+    public void setMerchantId(String merchantId)
     {
-        properties = new Properties();
+        this.merchantId = merchantId;
+    }
+
+    public String getKeysDirectory()
+    {
+        return keysDirectory;
+    }
+
+    public void setKeysDirectory(String keysDirectory)
+    {
+        this.keysDirectory = keysDirectory;
+    }
+
+    public void setTestMode(Boolean testMode)
+    {
+        this.testMode = testMode;
+    }
+
+
+    private Properties initialise()
+    {
+        Properties properties = new Properties();
         properties.put("merchantID", merchantId);
         properties.put("keysDirectory", keysDirectory);
         properties.put("targetAPIVersion", "1.28");
         properties.put("logDirectory", "logs");
+        properties.put("useHTTPClient", useHttpClient);
 
         if (testMode)
         {
@@ -43,7 +71,9 @@ public class CyberSource
             properties.put("enableLog", "false");
         }
 
+        return properties;
     }
+
 
     /**
      * This function combines the authorize and capture functions into a single call.
@@ -76,6 +106,25 @@ public class CyberSource
         return reply;
     }
 
+    /**
+     * When you are ready to fulfill a customer’s order and transfer funds from the customer’s
+     * bank to your bank, capture the authorization for that order.
+     * <p/>
+     * If you can fulfill only part of a customer’s order, do not capture the full amount of the
+     * authorization. Capture only the cost of the items that you ship. When you ship the
+     * remaining items, request a new authorization, then capture the new authorization.
+     * <p/>
+     * Due to the potential delay between authorization and capture, the authorization might
+     * expire with the issuing bank before you request capture. Most authorizations expire
+     * within five to seven days. If an authorization expires with the issuing bank before you
+     * request the capture, your bank or processor might require you to resubmit an
+     * authorization request and include a request for capture in the same message.
+     *
+     * @param authRequestId
+     * @param amount
+     * @return
+     * @throws Exception
+     */
     public HashMap capturePayment(String authRequestId, String amount) throws Exception
     {
         String requestID = null;
@@ -96,13 +145,11 @@ public class CyberSource
 
         try
         {
-            reply = Client.runTransaction(request, properties);
-        }
-        catch (ClientException e)
+            reply = Client.runTransaction(request, initialise());
+        } catch (ClientException e)
         {
             System.out.println(e.getMessage());
-        }
-        catch (FaultException e)
+        } catch (FaultException e)
         {
             System.out.println(e.getMessage());
         }
@@ -110,6 +157,32 @@ public class CyberSource
         return reply;
     }
 
+    /**
+     * Online authorization means that when you submit an order using a credit card, you receive
+     * an immediate confirmation about the availability of the funds. If the funds are available,
+     * the issuing bank reduces your customer’s open to buy, which is the amount of credit
+     * available on the card. Most of the common credit cards are processed online. For online
+     * authorizations, you will typically start the process of order fulfillment soon after you
+     * receive confirmation of the order.
+     * <p/>
+     * Online authorizations expire with the issuing bank after a specific length of time if they
+     * have not been captured and settled. Most authorizations expire within five to seven days.
+     * The issuing bank determines the length of time.
+     *
+     * @param creditCardNumber
+     * @param expirationDate
+     * @param amount
+     * @param firstName
+     * @param lastName
+     * @param address
+     * @param city
+     * @param state
+     * @param postalCode
+     * @param email
+     * @param country
+     * @return
+     * @throws Exception
+     */
     public HashMap authorizePayment(String creditCardNumber, String expirationDate, BigDecimal amount,
                                     String firstName, String lastName, String address, String city,
                                     String state, String postalCode, String email, String country
@@ -120,6 +193,30 @@ public class CyberSource
     }
 
 
+    /**
+     * CyberSource supports credits for all processors except CyberSource Latin American
+     * Processing.
+     * <p/>
+     * Request a credit when you need to give the customer a refund. When your request for a
+     * credit is successful, the issuing bank for the credit card takes money out of your merchant
+     * bank account and returns it to the customer. It usually takes two to four days for your
+     * acquiring bank to transfer funds from your merchant bank account.
+     *
+     * @param orderRequestToken
+     * @param creditCardNumber
+     * @param expirationDate
+     * @param amount
+     * @param firstName
+     * @param lastName
+     * @param address
+     * @param city
+     * @param state
+     * @param postalCode
+     * @param email
+     * @param country
+     * @return
+     * @throws Exception
+     */
     public HashMap credit(String orderRequestToken, String creditCardNumber, String expirationDate, BigDecimal amount,
                           String firstName, String lastName, String address, String city,
                           String state, String postalCode, String email, String country
@@ -131,6 +228,19 @@ public class CyberSource
                 lastName, address, city, state, postalCode, email, country, props);
     }
 
+    /**
+     * A void uses the request ID and
+     * request token returned from a previous service request to link the void to the service.
+     * Send the request ID value in the voidService_voidRequestID field and send the request
+     * token value in the orderRequestToken field. CyberSource uses these values to look up
+     * the customer’s billing and account information from the previous request or service,
+     * which means that you are required to include those fields in your void request.
+     *
+     * @param requestId
+     * @param orderRequestToken
+     * @return
+     * @throws Exception
+     */
     public HashMap voidTransaction(String requestId, String orderRequestToken) throws Exception
     {
 
@@ -151,13 +261,11 @@ public class CyberSource
 
         try
         {
-            reply = Client.runTransaction(request, properties);
-        }
-        catch (ClientException e)
+            reply = Client.runTransaction(request, initialise());
+        } catch (ClientException e)
         {
             System.out.println(e.getMessage());
-        }
-        catch (FaultException e)
+        } catch (FaultException e)
         {
             System.out.println(e.getMessage());
         }
@@ -229,17 +337,26 @@ public class CyberSource
 
         try
         {
-            reply = Client.runTransaction(request, properties);
-        }
-        catch (ClientException e)
+            reply = Client.runTransaction(request, initialise());
+        } catch (ClientException e)
         {
             System.out.println(e.getMessage());
-        }
-        catch (FaultException e)
+        } catch (FaultException e)
         {
             System.out.println(e.getMessage());
         }
 
         return reply;
+    }
+
+
+    public Boolean getUseHttpClient()
+    {
+        return useHttpClient;
+    }
+
+    public void setUseHttpClient(Boolean useHttpClient)
+    {
+        this.useHttpClient = useHttpClient;
     }
 }
