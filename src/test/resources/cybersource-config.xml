@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns="http://www.mulesoft.org/schema/mule/core"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:cyb="http://www.mulesoft.org/schema/mule/cybersource"
+  xmlns:cybsrc="http://www.mulesoft.org/schema/mule/cybersource"
   xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
   xsi:schemaLocation="
                http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/3.1/mule.xsd
@@ -9,12 +9,11 @@
                http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/3.1/mule-vm.xsd
                ">
 
-    <cyb:config name="cyber" keysDirectory="src/test/resources/keys" merchantId="mule" testMode="true"/>
+    <cybsrc:config name="cyber" keysDirectory="src/test/resources/keys" merchantId="mule" testMode="true"/>
 
 
     <flow name="makePaymentFlow">
-        <vm:inbound-endpoint path="makePayment" exchange-pattern="request-response"/>
-        <cyb:make-payment address="#[map-payload:address]" amount="#[map-payload:amount]"
+        <cybsrc:make-payment address="#[map-payload:address]" amount="#[map-payload:amount]"
                           city="#[map-payload:city]" country="#[map-payload:country]"
                           creditCardNumber="#[map-payload:creditCardNumber]" email="#[map-payload:email]"
                           expirationDate="#[map-payload:expDate]" firstName="#[map-payload:firstName]"

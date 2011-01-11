@@ -11,7 +11,9 @@ package org.mule.components;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mule.api.MuleEvent;
 import org.mule.api.MuleMessage;
+import org.mule.construct.SimpleFlowConstruct;
 import org.mule.module.client.MuleClient;
 import org.mule.tck.FunctionalTestCase;
 
@@ -52,7 +54,7 @@ public class CyberSourceTestCase extends FunctionalTestCase
         BigDecimal amount = new BigDecimal(rand.nextInt(200));
 
         HashMap reply = cyberSource.makePayment("378282246310005", "12/2012", amount, "Mule", "Man",
-                       "30 Maiden Lane", "San Francisco", "CA", "94108", "mule@muleman.com", "US");
+                "30 Maiden Lane", "San Francisco", "CA", "94108", "mule@muleman.com", "US");
 
         assertTrue("ACCEPT".equalsIgnoreCase(reply.get("decision").toString()));
 
@@ -70,7 +72,8 @@ public class CyberSourceTestCase extends FunctionalTestCase
 
     public void testMakePaymentConfig() throws Exception
     {
-        MuleClient client = new MuleClient(muleContext);
+        SimpleFlowConstruct flow = lookupFlowConstruct("makePaymentFlow");
+
         BigDecimal amount = new BigDecimal(rand.nextInt(200));
 
         HashMap<String, String> payload = new HashMap<String, String>();
@@ -86,13 +89,20 @@ public class CyberSourceTestCase extends FunctionalTestCase
         payload.put("postalCode", "94108");
         payload.put("state", "CA");
 
-        MuleMessage result = client.send("vm://makePayment", payload, null);
-        assertNotNull(result.getPayload());
-        assertTrue(result.getPayload() instanceof HashMap);
+        MuleEvent event = getTestEvent(payload);
+        Object result = flow.process(event).getMessage().getPayload();
+        assertNotNull(result);
+        assertTrue(result instanceof HashMap);
 
-        HashMap map = (HashMap)result.getPayload();
+        HashMap map = (HashMap) result;
         assertTrue(map.get("decision").equals("ACCEPT"));
-
     }
+
+
+    private SimpleFlowConstruct lookupFlowConstruct(String name)
+    {
+        return (SimpleFlowConstruct) muleContext.getRegistry().lookupFlowConstruct(name);
+    }
+
 
 }
